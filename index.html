@@ -182,7 +182,7 @@ Ywfsglqfaea xüd Glkolegamvwdvwsh</p>
       const pw = pwInput.value;
       if (!pw) { status.textContent = 'Bitte Kennwort eingeben.'; status.className = 'status error'; return; }
       const decrypted = vigenereDecrypt(encryptedText, pw);
-      status.textContent = 'Zugriff gewährt.';
+      status.textContent = 'Zugriff gewährt. Falls Sie allerdings nur Chaos sehen, haben Sie das falsche Codewort benutzt und die Entschlüsselung ist gescheitert. Hiermit sind Sie als feindliches Subjekt eingestuft worden. Wir haben sie auf dem Radar.';
       status.className = 'status ok';
       secretBox.classList.add('unlocked');
       encryptedEl.textContent = decrypted;
