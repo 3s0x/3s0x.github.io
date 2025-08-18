@@ -12,6 +12,11 @@
       --accent: #1aff1a;
       --error: #ff4d4d;
     }
+
+    * {
+  box-sizing: border-box;
+}
+
     html, body { height: 100%; }
     body {
       margin: 0;
@@ -24,11 +29,11 @@
       text-shadow: 0 0 6px rgba(25,255,25,0.35);
     }
     .frame {
-      width: min(780px, 94vw);
+      width: min(94vw, 780px);
       border: 1px solid var(--fg-dim);
       border-radius: 16px;
       padding: 24px;
-      margin: 100px;
+      margin: 3%;
       box-shadow: 0 0 24px rgba(0,255,0,0.1), inset 0 0 24px rgba(0,255,0,0.06);
       position: relative;
     }
@@ -46,13 +51,18 @@
       pointer-events: none;
       border-radius: 16px;
     }
-    h1 { margin: 0 0 12px 0; font-weight: 700; font-size: 20px; }
+    h1 { margin: 0 0 12px 0; font-weight: 700; font-size: 20px; text-align: center; }
     .blink::after { content: "▌"; margin-left: 4px; animation: blink 1s steps(1) infinite; }
     @keyframes blink { 50% { opacity: 0; } }
-    .meta { color: var(--fg-dim); font-size: 12px; margin-bottom: 16px; opacity: 0.9; }
+    .meta { color: var(--fg-dim); font-size: 12px; margin-bottom: 16px; opacity: 0.9; text-align: center;}
     .panel { display: grid; gap: 12px; margin-top: 10px; }
     label { font-size: 14px; color: var(--accent); }
-    .row { display: flex; gap: 8px; }
+    .row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
     input[type="password"], input[type="text"] {
       flex: 1 1 auto;
       background: transparent;
@@ -87,14 +97,26 @@
       white-space: pre-wrap;
       filter: blur(4px);
       transition: filter 0.5s ease;
+      color:white;
     }
     .secret.unlocked {
       filter: blur(0);
+    }
+    .logo {
+      display: flex; 
+      justify-content: center; 
+      align-items: center;
+      padding-bottom:20px
     }
   </style>
 </head>
 <body>
   <div class="frame scanline" id="frame">
+  
+<div class="logo">
+    <img src="3s0x.github.io/blob/main/mnstr-staatssicherheit.png" width="30%" alt="…">
+</div>
+
     <h1>HORIZONT // Abt. Wiss. Aufklärung <span class="blink"></span></h1>
     <div class="meta">Zugriff nur mit gültigem Kennwort. Vorgang wird protokolliert.</div>
 
@@ -182,7 +204,7 @@ Ywfsglqfaea xüd Glkolegamvwdvwsh</p>
       const pw = pwInput.value;
       if (!pw) { status.textContent = 'Bitte Kennwort eingeben.'; status.className = 'status error'; return; }
       const decrypted = vigenereDecrypt(encryptedText, pw);
-      status.textContent = 'Zugriff gewährt. Falls Sie allerdings nur Chaos sehen, haben Sie das falsche Codewort benutzt und die Entschlüsselung ist gescheitert. Hiermit sind Sie als feindliches Subjekt eingestuft worden. Wir haben sie auf dem Radar.';
+      status.textContent = 'Zugriff gewährt. Falls Sie allerdings immernoch nur Chaos sehen, haben Sie das falsche Codewort benutzt und sind möglicherweise der Feind. Wir haben sie auf dem Schirm.';
       status.className = 'status ok';
       secretBox.classList.add('unlocked');
       encryptedEl.textContent = decrypted;
