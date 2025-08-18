@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HORIZONT // Sichere Eingabe</title>
+  <style>
+    :root {
+      --bg: #000000;
+      --fg: #19ff19;
+      --fg-dim: #0dbb0d; 
+      --accent: #1aff1a;
+      --error: #ff4d4d;
+    }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: "Courier New", Courier, monospace;
+      display: grid;
+      place-items: center;
+      letter-spacing: 0.3px;
+      text-shadow: 0 0 6px rgba(25,255,25,0.35);
+    }
+    .frame {
+      width: min(780px, 94vw);
+      border: 1px solid var(--fg-dim);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 0 24px rgba(0,255,0,0.1), inset 0 0 24px rgba(0,255,0,0.06);
+      position: relative;
+    }
+    .scanline::after {
+      content: "";
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(0,255,0,0.05) 0px,
+        rgba(0,255,0,0.05) 1px,
+        transparent 2px,
+        transparent 4px
+      );
+      mix-blend-mode: overlay;
+      pointer-events: none;
+      border-radius: 16px;
+    }
+    h1 { margin: 0 0 12px 0; font-weight: 700; font-size: 20px; }
+    .blink::after { content: "▌"; margin-left: 4px; animation: blink 1s steps(1) infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+    .meta { color: var(--fg-dim); font-size: 12px; margin-bottom: 16px; opacity: 0.9; }
+    .panel { display: grid; gap: 12px; margin-top: 10px; }
+    label { font-size: 14px; color: var(--accent); }
+    .row { display: flex; gap: 8px; }
+    input[type="password"], input[type="text"] {
+      flex: 1 1 auto;
+      background: transparent;
+      color: var(--fg);
+      border: 1px solid var(--fg-dim);
+      border-radius: 10px;
+      padding: 12px 14px;
+      outline: none;
+      box-shadow: inset 0 0 10px rgba(0,255,0,0.08);
+      font-family: inherit; font-size: 14px;
+    }
+    input::placeholder { color: #0a8f0a; }
+    button {
+      flex: 0 0 auto;
+      background: transparent;
+      color: var(--fg);
+      border: 1px solid var(--fg);
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-family: inherit; font-size: 14px;
+      cursor: pointer;
+    }
+    .status { min-height: 20px; font-size: 13px; color: var(--fg-dim); }
+    .error { color: var(--error); text-shadow: 0 0 6px rgba(255,77,77,0.5); }
+    .ok { color: var(--accent); }
+    .secret {
+      margin-top: 18px;
+      border-top: 1px dashed var(--fg-dim);
+      padding-top: 16px;
+      display: block;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      filter: blur(4px);
+      transition: filter 0.5s ease;
+    }
+    .secret.unlocked {
+      filter: blur(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="frame scanline" id="frame">
+    <h1>HORIZONT // Abt. Wiss. Aufklärung <span class="blink"></span></h1>
+    <div class="meta">Zugriff nur mit gültigem Kennwort. Vorgang wird protokolliert.</div>
+
+    <div class="panel">
+      <label for="pw">Kennwort-Eingabe</label>
+      <div class="row">
+        <input id="pw" type="password" placeholder="••••••••" autocomplete="off" />
+        <button id="btn">Entsperren</button>
+      </div>
+      <div class="status" id="status">Bereit.</div>
+    </div>
+
+    <div class="secret" id="secret">
+      <p id="encrypted">Qszqweo Jwdgurzmegkkqzq – Bmb tüj Uvjo Omssf
+Wwfuglofaga xüb Glmolcgaovwbvwuh – Slhwuzmxu Ougkobkovsphduqzo Omrydäbifs
+Pwbzaz, rwx 17. Aäjl 1983
+
+Uwxckes Vb. [Bsys vog Wydxäxuwdg],
+
+mxgwds Toctmqzdifssf wwl psj Yftuhsvüpwdksmvmzukkbdmuw „RCJUNGXH“…</p>
+    </div>
+  </div>
+
+  <script>
+    function vigenereDecrypt(cipher, key) {
+      key = key.toUpperCase();
+      let plain = "";
+      let j = 0;
+      for (let i = 0; i < cipher.length; i++) {
+        let c = cipher[i];
+        if (c.match(/[A-Z]/i)) {
+          let isUpper = c === c.toUpperCase();
+          let cCode = c.toUpperCase().charCodeAt(0) - 65;
+          let kCode = key[j % key.length].charCodeAt(0) - 65;
+          let pCode = (cCode - kCode + 26) % 26;
+          let pChar = String.fromCharCode(pCode + 65);
+          plain += isUpper ? pChar : pChar.toLowerCase();
+          j++;
+        } else {
+          plain += c;
+        }
+      }
+      return plain;
+    }
+
+    const btn = document.getElementById('btn');
+    const pwInput = document.getElementById('pw');
+    const status = document.getElementById('status');
+    const secretBox = document.getElementById('secret');
+    const encryptedEl = document.getElementById('encrypted');
+    const encryptedText = encryptedEl.textContent;
+
+    function unlock() {
+      const pw = pwInput.value;
+      if (!pw) { status.textContent = 'Bitte Kennwort eingeben.'; status.className = 'status error'; return; }
+      const decrypted = vigenereDecrypt(encryptedText, pw);
+      status.textContent = 'Zugriff gewährt.';
+      status.className = 'status ok';
+      secretBox.classList.add('unlocked');
+      encryptedEl.textContent = decrypted;
+    }
+
+    btn.addEventListener('click', unlock);
+    pwInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') unlock(); });
+  </script>
+</body>
+</html>
