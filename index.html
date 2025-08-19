@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image/png" href="/mnstr-staatssicherheit.png">
+  <link rel="icon" type="image/png" href="mnstr-staatssicherheit.png">
   <title>HORIZONT // Sichere Eingabe</title>
   <style>
     :root {
@@ -260,15 +260,16 @@ margin: 0;
     width: 400px; 
     max-width: 90%;
     transform: translate(-50%, -50%);
-    background: rgb(41, 41, 41);
-    border-radius: 15px;
-    padding: 3%;
+    background: rgb(0, 0, 0);
+    border: 1px solid var(--fg-dim);
+    border-radius: 10px;
+    padding: 30px;
     display: none;
     z-index: 1000;
-    box-shadow: 0 0 10px rgba(0,0,0,0.5);
     text-align: center;
     white-space: pre-wrap;
     word-break: break-word;
+    box-shadow: 0 0 24px rgba(0, 255, 0, 0.276), inset 0 0 24px rgba(0,255,0,0.06);
   }
 
   #popup button {
@@ -452,7 +453,7 @@ Ich liebe den Kommunismus!</button>
 
 <script>
     // Scramble-Effekt (kann Text übernehmen ODER DOM-Text nutzen)
-  function scrambleText(element, newText = null, delay=80, duration=3500) {
+  function scrambleText(element, newText = null, delay=50, duration=3500) {
     const chars = "!@#$%^&*()_+{}[]ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     const target = newText !== null ? newText : element.textContent;
     const length = target.length;
