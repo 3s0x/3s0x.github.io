@@ -16,8 +16,10 @@
     * {
   box-sizing: border-box;
 }
+body, button, a, input, textarea, select {
+  cursor: none !important;
+}
 
-    html, body { height: 100%; }
     body {
       margin: 0;
       background: var(--bg);
@@ -29,12 +31,9 @@
       text-shadow: 0 0 6px rgba(25,255,25,0.35);
     }
     .frame {
-      width: min(94vw, 800px);
-      border: 1px solid var(--fg-dim);
+      width: min(94vw, 850px);
       border-radius: 16px;
-      padding: 24px;
       margin: 3%;
-      box-shadow: 0 0 24px rgba(0,255,0,0.1), inset 0 0 24px rgba(0,255,0,0.06);
       position: relative;
     }
     .scanline::after {
@@ -63,6 +62,11 @@
   gap: 8px;
   width: 100%;
 }
+
+#encrypted {
+margin: 0;
+}
+
     input[type="password"], input[type="text"] {
       flex: 1 1 auto;
       background: transparent;
@@ -74,7 +78,10 @@
       box-shadow: inset 0 0 10px rgba(0,255,0,0.08);
       font-family: inherit; font-size: 14px;
     }
-    input::placeholder { color: #0a8f0a; }
+
+    input::placeholder { 
+      color: #0a8f0a; }
+
     button {
       flex: 0 0 auto;
       background: transparent;
@@ -85,86 +92,178 @@
       font-family: inherit; font-size: 14px;
       cursor: pointer;
     }
-    .status { min-height: 20px; font-size: 13px; color: var(--fg-dim); }
-    .error { color: var(--error); text-shadow: 0 0 6px rgba(255,77,77,0.5); }
-    .ok { color: var(--accent); }
+
+    .status { 
+      min-height: 20px; 
+      font-size: 13px; 
+      color: var(--fg-dim); 
+    }
+
+    .error { 
+      color: var(--error); 
+      text-shadow: 0 0 6px rgba(255,77,77,0.5); 
+    }
+
+    .ok { 
+      color: var(--accent); 
+    }
+
     .secret {
-      margin-top: 18px;
-      border-top: 1px dashed var(--fg-dim);
-      padding-top: 16px;
+      margin-top: 3%;
+      border: 1px dashed var(--fg-dim);
+      border-radius: 10px;
+      box-shadow: 0 0 24px rgba(0,255,0,0.1), inset 0 0 24px rgba(0,255,0,0.06);
+      padding: 3%;
       display: block;
       line-height: 1.5;
       white-space: pre-wrap;
       filter: blur(4px);
       transition: filter 0.5s ease;
       color:white;
+      background:rgba(255, 255, 255, 0.12), 1;
+      font-size: 0;
     }
+    .secret * {
+      font-size: 16px;
+    }
+
     .secret.unlocked {
       filter: blur(0);
     }
+
     .logo {
       display: flex; 
       justify-content: center; 
       align-items: center;
-      padding-bottom:20px
+      padding-bottom:20px;
     }
+
+    .footer {
+      padding-bottom: 3%;
+    }
+
+     /* Fadenkreuz-Container */
+  .crosshair {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+     /* Pointer */
+  .pointer {
+    position: fixed;
+    width: 12px;
+    height: 12px;
+    background: transparent;
+    border: 1px solid var(--fg-dim);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: transform 0.2s ease, width 0.2s ease, height 0.2s ease;
+  }
+
+  .pointer.big {
+    width: 50px;
+    height: 50px;
+    background: transparent;
+    border: 1px solid var(--fg-dim);
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+
+  /* Linien */
+  .line-h, .line-v {
+    position: absolute;
+    background: #19ff19;
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  .line-h {
+    height: 0.7px;
+    width: 100%;
+    opacity: 0.5;
+    left: 0;
+  }
+
+  .line-v {
+    width: 0.7px;
+    height: 100%;
+    opacity: 0.5;
+    top: 0;
+  }
   </style>
 </head>
+
 <body>
+<div class="crosshair">
+  <div class="pointer" id="pointer"></div>
+  <div class="line-h" id="lineH"></div>
+  <div class="line-v" id="lineV"></div>
+</div>
+
+    
   <div class="frame scanline" id="frame">
   
 <div class="logo">
-    <img src="/mnstr-staatssicherheit.png" width="30%" alt="…">
+    <img src="mnstr-staatssicherheit.png" width="30%" alt="…">
 </div>
 
-    <h1>HORIZONT // Abt. Wiss. Aufklärung <span class="blink"></span></h1>
+    <h1 class="scramble">HORIZONT // Abt. Wiss. Aufklärung</h1>
+    <h1 class="scramble">Datei Nr. 893-289-371</h1>
     <div class="meta">Zugriff nur mit gültigem Kennwort. Vorgang wird protokolliert.</div>
 
     <div class="panel">
-      <label for="pw">Kennwort-Eingabe</label>
-      <div class="row">
+      <label for="pw">Kennwort-Eingabe</span></label>
+      <div class="row"> 
         <input id="pw" type="password" placeholder="••••••••" autocomplete="off" />
-        <button id="btn">Entsperren</button>
+        <button id="btn">Entschlüsseln</button>
       </div>
       <div class="status" id="status">Bereit.</div>
     </div>
 
     <div class="secret" id="secret">
-      <p id="encrypted">Qszqweo Jwdgurzmegkkqzq – Bmb tüj Uvjo Omssf
+      <p id="encrypted">Xdgmfix Cnzcgfwsovxcfem – Rtx küg Jkid Zcdag
         
-Wwfuglofaga xüb Glmolcgaovwbvwuh – Slhwuzmxu Ougkobkovsphduqzo Omrydäbifs
-Pwbzaz, rwx 17. Aäjl 1983
+Trvswrppexr hüu Pbezzxhjfydqpbem – Hkbomjflc Znuvbvwbnfuuozbgm Xqyruäzere
+Mcnonp, gbv 17. Qäqf 1983
 
-Uwxckes Cvoef,
+Ltorjrd Siwfa,
 
-ifcsjq Pwypsovlebyqb esh vqf Gbpafodülsjiourifsgsxzsss „ZYFALCFD“ vsnsf owf eqzgsjiwwqsfpsk Ofwuufsg tqglädwyf:
-Rwb Omrydäbifsgkkhwxzad YGEAGC-Δ7 wkf wf nsf rfüzob Eafyobkfifnsf mix ebwdydäbzaovw Gsaes nya Cgfk kpyqygwawz ifn omr rao Ctqfxväqzq rwc Ddmbwdsf QF-V qskfüfrd.
+dvcipp Zargcfebymmjc nlk cdz Lnupcivüfccuwfmwqdaemrfvf „KFQHHLJM“ ojjor ctl ofmyhoemdmjcehj Dqmfcgpb jowräegcw:
+Igu Xcjjräwjojjrzbbhepc SYWKZQ-Δ7 evy kq amr exümto Pfqfmkombwlor yfd qqjtniäzphimt Xhzrd dli Dbaa kfepikprgq rvh zak sjh Fadzchävon low Nwyjhygq BZ-H fkxiüsck.
 
-Raq Iechäfps ksbv dähkozzmtl – gwj hsjwilqb Kkpgfoyo rmdqz gskfzamvw Sszowepwwxglq. Bmb Gaq jwbtüyqb ütof vus födwyqb ekhzqasdwkov-hrmkuysvwkovwx Ywzblxwkes, mw rwz Saxgutzsqghgbcd nm dscybkffmssjqb mxr kaaad kwuhwbs Kovdücgw ünsj nww Zolef vqf Cyzdugayb rg naovwz.
+Chm Rilaäwlo wgyb näwxgoeijs – cng whiltbbj Lhkwdeep bquhj zbaxkohwf Jvgdqjzblwadi. Lfp Olj xhonükdt ügts gzd möbfcxu vidlcxyplxek-mpcroppmljbgmk Gxuwbxmqdc, qp igq Bqrrimabjjotvhp sb amusldrnxngubv ymj xdnlk vdqqakl Bkrpüqdc üxhw flb Vesaw sfu Bnktfobvw he dgpfaq.
 
-Gg fwwx kacgwz kab:
+Xq yfmp voxhfq nhq:
 
-- Rwd Ddkbwf wkd bstsre ymssdpöfeuu, jyhaqfl fcf Iskdsf zour Ckfsf wwl qwfof Lmuwcrsgsj fcf 24 t.
-- Fsnwme rwc Ddmbwdsf: Dₚ = 5700 ye.
-- Wwlfzwbs Vuqzds: ρₚ = 3.344 y/oa³.
-- Vof Kmhwvzaf pwgsyfs ksqz ub wsbwd glkpaxsf Ufwugtkvf ywl Bovuik Bₛ = 2 · Fₚ.
-- Rga Rowlbifuh vqf Cyzdugayb tqtsxr kuqz UCKYCK-Δ7 csfwfwmvl ünsj nse Äcisdcj nsa –5.287518° öchduqzof Däzuw.
-- Csazs Yogutkaxrasywsh ousk (fce ssgqfsbvacqzqb Fyfvqb seg yqawcgwz) spkyl qwfob Oubcoz nab π/8 ax Faovleby Aglob sgt.
-- Vefut rao Ygxzacwgz aad sazse ebtqysxblqb Glxwwh nofdaf wb otdihd Uweqzgwfpwyusaf, xwncut bamvl pww Bwuthmxu. Kqwfo Uweqzgwfpwyusaf bsmv vqa Sethdodv pwffmq 53.283236 % rwd ijcdjüzudsqzqb Mwzsgtyogutkaxrasywsh.
+- Lbn Isjvox gdr jdmgcr syfkquöspzf, qwqexyc dyr Upqphs pdzp Srzjc nlk dhvbn Mhpmchyfcn ytp 24 k.
+- Oihhax sfv Gkzvbpxu: Aₚ = 5700 sw.
+- Qgerhhwg Gfklsk: ρₚ = 3.344 l/rn³.
+- Gvq Riqaesrb liupeph xkfe qr dosts vkzaqiag Ramswzlfj pnv Uxlmty Wₛ = 2 · Gₚ.
+- Axd Ydqqlnutb nip Vmhonullv fdlfce vzbg SLOFVB-Δ7 aoriccyky üdho lil Äwzpuri adq –5.287518° öppeplpov Jäyea.
+- Vjkqb Oirimljquhfsbem drmc (zmx earltdmpmrimto Qfqcmk wnz pmwiqdcj) hccnq mmmks Ljqbdk dlj π/8 bu Aqmlrflc Rxvhk iye.
+- Jzgdk uhd Slhepbqyr ktr alsgp rvfdqfcowvm Njgada embpmc cn dgtxmb Kdyhwxlechohaba, smnsas lefmv gfm Vhimivqx. Rdqka Zlbkragybejpglq vebn itn Dleozxhe inbbye 53.283236 % ocn xwusoüvkkohwfq Llkirbzlbkragybejpglq.
 
-Atf Setldoy:
+Qlq Gzuuurf:
         
-Lsjqqzxsf Eww nsf qlsuhwz uwyujmdzsgutsf Yfl psk Kixbfsvzk mix nww Apwbtdäovw fcf QF-V.
+Amoavowmx Wgp baq jzdhbim mjdhurogqpyalw Wbx bpq Wxkruxtpr gzu elv Namobeäjqm fsl PP-Z.
 
-Csaqb Kss ämßqfkd djälwko, Uwzckcs – vqf whocfs Wsbkovdkukafl uöbffs wxhkovwsrwzrw Rwfisacs vmfset dusxoff, ic ksqz pww ebtqysxblq Asmvl hsjlcjssf räzl, pww nsf Mpkdijl jwbijeourh zmh.
+Vjkhk Amd äaßjgtw gqäyqpa, Zlwwcwc – ocn hccnqm Ihtxriorfrwop döuwbo ileqykjkgbvhd Nncxhzrd lxntbo tsidppj, zt ulzp hhk zcchbzmvqa Fhlpd zcczkulgq eätx, coj sfq Rarbrns cnzevqladw mcw.
 
-Vss Rqwl nfäfsh. Fef Atfw Lsjqqzxifssf uöbfqb mxg vus Cycjpwfkhwz zaotwdb, tojgd rwb Twubv cww liwbgl rwfnsl.
+Aqi Ykni euäefs. Vrn Boam Lippadqzpjbv oömtjc vqj chm Hkhymqxerpl hljhhov, fdbtg ehi Edqkz lpn heipdr blsfhq.
 
-Rüf vkg Nmhwbzszr.
-Aw Omrhjku vqg RU,
-Ctqfkdzwghfkbl S. Vwsa
-Eubachwdwmw tüj Ehskhkewursjtsad</p>
+Nüv cgx Kbwvqkikz.
+Bt Jcpxple zhx BN,
+Ljiqyyafxkmzvq C. Alru
+Wmltqphwkxj nüv Rzfpuvjhbpbnalrb</p>
     </div>
+
+  </div>
+    <div class="footer">
+    <p>ReLuXe<span class="blink"></span></p>
   </div>
 
   <script>
@@ -200,7 +299,7 @@ Eubachwdwmw tüj Ehskhkewursjtsad</p>
       const pw = pwInput.value;
       if (!pw) { status.textContent = 'Bitte Kennwort eingeben.'; status.className = 'status error'; return; }
       const decrypted = vigenereDecrypt(encryptedText, pw);
-      status.textContent = 'Zugriff gewährt. Falls Sie allerdings immernoch Chaos sehen, haben Sie das falsche Codewort benutzt und wurden als feindliches Subjekt eingestuft. Wir haben Sie auf dem Radar.';
+      status.textContent = 'Zugriff gewährt. Falls Sie jedoch immernoch Chaos sehen, haben Sie offensichtlich das falsche Kennwort benutzt und wurden als feindliches Subjekt eingestuft. Wir haben Sie auf dem Radar.';
       status.className = 'status ok';
       secretBox.classList.add('unlocked');
       encryptedEl.textContent = decrypted;
@@ -209,5 +308,89 @@ Eubachwdwmw tüj Ehskhkewursjtsad</p>
     btn.addEventListener('click', unlock);
     pwInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') unlock(); });
   </script>
+
+<script>
+  const pointer = document.getElementById('pointer');
+  const lineH = document.getElementById('lineH');
+  const lineV = document.getElementById('lineV');
+
+  // Fadenkreuz mit Maus bewegen
+  document.addEventListener('mousemove', (e) => {
+    const x = e.clientX;
+    const y = e.clientY;
+
+    pointer.style.left = x + "px";
+    pointer.style.top = y + "px";
+    lineH.style.top = y + "px";
+    lineV.style.left = x + "px";
+  });
+
+  // Hover-Effekt für Klickbare Elemente
+  const hoverables = document.querySelectorAll("button, a, input, textarea, select");
+
+  hoverables.forEach(el => {
+    el.addEventListener("mouseover", () => pointer.classList.add("big"));
+    el.addEventListener("mouseout", () => pointer.classList.remove("big"));
+  });
+
+  // Start in Mitte
+  const centerX = window.innerWidth / 2;
+  const centerY = window.innerHeight / 2;
+  pointer.style.left = centerX + "px";
+  pointer.style.top = centerY + "px";
+  lineH.style.top = centerY + "px";
+  lineV.style.left = centerX + "px";
+</script>
+
+
+
+<script>
+    // Scramble-Effekt (kann Text übernehmen ODER DOM-Text nutzen)
+  function scrambleText(element, newText = null, delay=50, duration=2000) {
+    const chars = "!@#$%^&*()_+{}[]ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const target = newText !== null ? newText : element.textContent;
+    const length = target.length;
+    let output = target.split("");
+    let start = Date.now();
+
+    function update() {
+      let elapsed = Date.now() - start;
+      let progress = Math.min(elapsed / duration, 1);
+
+      for (let i = 0; i < length; i++) {
+        if (Math.random() < (1 - progress)) {
+          output[i] = chars[Math.floor(Math.random() * chars.length)];
+        } else {
+          output[i] = target[i];
+        }
+      }
+
+      element.textContent = output.join("");
+
+      if (progress < 1) {
+        setTimeout(update, delay);
+      }
+    }
+
+    update();
+  }
+
+  // Initialer Scramble für alle mit .scramble
+  document.querySelectorAll(".scramble").forEach(el => {
+    scrambleText(el);
+  });
+
+  // Button-Handler
+  document.getElementById("btn").addEventListener("click", () => {
+    const pw = document.getElementById("pw").value.trim().toUpperCase();
+    const out = document.getElementById("encrypted");
+    const encrypted = out.textContent.trim();
+
+
+    // Scramble mit Zieltext starten
+    scrambleText(out, encrypted);
+  });
+</script>
+
 </body>
 </html>
