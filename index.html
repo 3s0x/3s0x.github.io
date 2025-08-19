@@ -33,7 +33,6 @@ body, button, a, input, textarea, select {
     .frame {
       width: min(94vw, 850px);
       border-radius: 16px;
-      margin: 3%;
       position: relative;
     }
     .scanline::after {
@@ -241,6 +240,39 @@ margin: 0;
             0%, 50%, 100% { opacity: 0; }
             25%, 75% { opacity: 1; }
         }
+
+  /* Overlay für den Hintergrund */
+  #overlay {
+    position: fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background: rgba(0,0,0,0.3);
+    display: none;
+    z-index: 500;
+  }
+
+  /* Popup */
+  #popup {
+    position: fixed;
+    top:50%; left:50%;
+    width: 400px; 
+    max-width: 90%;
+    transform: translate(-50%, -50%);
+    background: rgb(41, 41, 41);
+    border-radius: 15px;
+    padding: 3%;
+    display: none;
+    z-index: 1000;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    text-align: center;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  #popup button {
+    margin-top: 30px;
+    padding: 5px 10px;
+  }
   </style>
 </head>
 
@@ -319,6 +351,18 @@ Wmltqphwkxj nüv Rzfpuvjhbpbnalrb</p>
     </div>
 
   </div>
+
+ <div id="overlay"></div>
+<div id="popup">
+<b>Aber Genosse! </b>
+
+Wohin wollen sie denn diese höchst sensiblen Daten weiterleiten? 
+
+Etwa dem Feind?
+<button onclick="closePopup()">Natürlich nicht.
+Ich liebe den Kommunismus!</button>
+</div>
+
     <div class="footer">
     <p>ReLuXe<span class="blink"></span></p>
   </div>
@@ -460,8 +504,27 @@ Wmltqphwkxj nüv Rzfpuvjhbpbnalrb</p>
         setTimeout(() => {
             loader.style.display = 'none';
             content.style.display = 'block';
-        }, 3000);
+        }, 2500);
     </script>
+
+<script>
+  function showPopup() {
+    document.getElementById('popup').style.display = 'block';
+    document.getElementById('overlay').style.display = 'block';
+  }
+
+  function closePopup() {
+    document.getElementById('popup').style.display = 'none';
+    document.getElementById('overlay').style.display = 'none';
+  }
+
+  // Copy-Versuch erkennen
+  document.addEventListener('copy', (e) => {
+    e.preventDefault(); // verhindert das Kopieren
+    showPopup();
+  });
+</script>
+
 
 </body>
 </html>
