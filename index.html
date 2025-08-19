@@ -207,17 +207,51 @@ margin: 0;
   white-space: pre-wrap;
   word-break: break-word;
 }
+
+
+        body > * {
+            display: none;
+        }
+        
+        /* Container für die Animation */
+        #loader {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height:100vh;
+            font-size:24px;
+        }
+
+        /* Blinking Punkte */
+        .dot {
+            opacity: 0;
+            animation: blink 1s infinite;
+        }
+
+        .dot:nth-child(1) { animation-delay: 0s; }
+        .dot:nth-child(2) { animation-delay: 0.3s; }
+        .dot:nth-child(3) { animation-delay: 0.6s; }
+
+        @keyframes blink {
+            0%, 50%, 100% { opacity: 0; }
+            25%, 75% { opacity: 1; }
+        }
   </style>
 </head>
 
 <body>
-<div class="crosshair">
+
+
+        <div id="loader">
+        Für sichere Eingabe vorbereiten <span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
+    </div> 
+<div id="content">
+    <div class="crosshair">
   <div class="pointer" id="pointer"></div>
   <div class="line-h" id="lineH"></div>
   <div class="line-v" id="lineV"></div>
 </div>
 
-    
   <div class="frame scanline" id="frame">
   
 <div class="logo">
@@ -227,6 +261,8 @@ margin: 0;
     <h1 class="scramble">HORIZONT // Abt. Wiss. Aufklärung</h1>
     <h1 class="scramble">Datei Nr. 893-289-371</h1>
     <div class="meta">Zugriff nur mit gültigem Kennwort. Vorgang wird protokolliert.</div>
+
+
 
     <div class="panel">
       <label for="pw">Kennwort-Eingabe</span></label>
@@ -278,6 +314,8 @@ Wmltqphwkxj nüv Rzfpuvjhbpbnalrb</p>
     <div class="footer">
     <p>ReLuXe<span class="blink"></span></p>
   </div>
+
+</div>
 
   <script>
     function vigenereDecrypt(cipher, key) {
@@ -404,6 +442,18 @@ Wmltqphwkxj nüv Rzfpuvjhbpbnalrb</p>
     scrambleText(out, encrypted);
   });
 </script>
+
+<script>
+        // Alles ausblenden, außer loader
+        const content = document.getElementById('content');
+        const loader = document.getElementById('loader');
+
+        // Nach 1500ms alles wieder einblenden
+        setTimeout(() => {
+            loader.style.display = 'none';
+            content.style.display = 'block';
+        }, 2000);
+    </script>
 
 </body>
 </html>
