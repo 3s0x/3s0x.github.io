@@ -218,6 +218,7 @@ margin: 0;
         #loader {
             display: flex;
             justify-content: center;
+  flex-direction: column;
             align-items: center;
             height:100vh;
             font-weight: 700;
@@ -247,6 +248,9 @@ margin: 0;
 
 
         <div id="loader">
+            <div class="logo">
+    <img src="/mnstr-staatssicherheit.png" width="30%" alt="…">
+</div>
         <p>Für sichere Eingabe vorbereiten <br><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></p>
     </div> 
 <div id="content">
@@ -456,7 +460,7 @@ Wmltqphwkxj nüv Rzfpuvjhbpbnalrb</p>
         setTimeout(() => {
             loader.style.display = 'none';
             content.style.display = 'block';
-        }, 2000);
+        }, 3000);
     </script>
 
 </body>
